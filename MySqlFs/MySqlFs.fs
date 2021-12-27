@@ -1,0 +1,4 @@
+﻿namespace MySqlFs
+
+module Common=
+    
