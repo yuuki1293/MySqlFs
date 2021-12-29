@@ -15,30 +15,32 @@ module Function =
     type DataBaseDropOut = DataBaseDropOut of string
     type DataBaseAlterOut = DataBaseAlterOut of string
 
-    type INextCols =
+    type IColsTableCreateOut =
         abstract member value : string
 
-    type INextTableCreateOut =
+    type ITableCreateOut =
         abstract member value : string
 
     type TableCreateOut =
         | TableCreateOut of string
-        interface INextTableCreateOut with
+        interface ITableCreateOut with
             member this.value =
                 match this with
                 | TableCreateOut x -> x
 
-    type TableCreateOutWithCols =
-        | TableCreateOutWithCols of string
-        interface INextCols with
+    type ColsTableCreateOut =
+        | ColsTableCreateOut of string
+        interface IColsTableCreateOut with
             member this.value = this.Value
 
-        interface INextTableCreateOut with
+        interface ITableCreateOut with
             member this.value = this.Value
 
         member this.Value =
             match this with
-            | TableCreateOutWithCols x -> x
+            | ColsTableCreateOut x -> x
+
+    type TableDropOut = TableDropOut of string
 
     type TableCol = TableCol of string
 
@@ -58,36 +60,48 @@ module Function =
             | x -> Error x
 
     type Original =
-        static member createDatabase1 (DataBase database) =
+        static member createDatabase1(DataBase database) =
             $"CREATE DATABASE {database}" |> DataBaseCreateOut
 
         static member createDatabase2 (DataBase database) (_: IfNotExists) =
             $"CREATE DATABASE IF NOT EXISTS {database}"
             |> DataBaseCreateOut
 
-        static member createTable1 (Table table) =
-            $"CREATE TABLE {table}" |> TableCreateOutWithCols
+        static member createTable1(Table table) =
+            $"CREATE TABLE {table}" |> ColsTableCreateOut
 
         static member createTable2 (Table table) (_: IfNotExists) =
             $"CREATE TABLE IF NOT EXISTS {table}"
-            |> TableCreateOutWithCols
+            |> ColsTableCreateOut
 
         static member createTable3 (Table table) (_: Temporary) =
             $"CREATE TEMPORARY TABLE {table}"
-            |> TableCreateOutWithCols
+            |> ColsTableCreateOut
 
-        static member createTable4 (Table table) (_: IfNotExists) (_: Temporary)=
+        static member createTable4 (Table table) (_: IfNotExists) (_: Temporary) =
             $"CREATE TEMPORARY TABLE IF NOT EXISTS {table}"
-            |> TableCreateOutWithCols
+            |> ColsTableCreateOut
 
-        static member drop1 (DataBase database)=
+        static member dropDatabase1(DataBase database) =
             $"DROP DATABASE {database} " |> DataBaseDropOut
 
-        static member drop2 (DataBase database) (_: IfExists) =
+        static member dropDatabase2 (DataBase database) (_: IfExists) =
             $"DROP DATABASE IF EXISTS {database}"
             |> DataBaseDropOut
 
-        static member alter (DataBase database)=
+        static member dropTable1(Table table) = $"DROP TABLE {table}" |> TableDropOut
+
+        static member dropTable2 (Table table) (_: IfExists) =
+            $"DROP TABLE IF EXISTS {table}" |> TableDropOut
+
+        static member dropTable3 (Table table) (_: Temporary) =
+            $"DROP TEMPORARY TABLE {table}" |> TableDropOut
+
+        static member dropTable4 (Table table) (_: IfExists) (_: Temporary) =
+            $"DROP TEMPORARY TABLE IF EXISTS {table}"
+            |> TableDropOut
+
+        static member alterDatabase(DataBase database) =
             $"ALTER DATABASE {database}" |> DataBaseAlterOut
 
     type CharSet =
@@ -99,7 +113,7 @@ module Function =
             $"{command} DEFAULT CHARACTER SET = {character}"
             |> DataBaseAlterOut
 
-        static member createTable (character: string) (command: INextTableCreateOut) =
+        static member createTable (character: string) (command: ITableCreateOut) =
             $"{command.value} DEFAULT CHARACTER SET = {character}"
             |> TableCreateOut
 
@@ -112,7 +126,7 @@ module Function =
             $"{command} DEFAULT COLLATE = {collation}"
             |> DataBaseAlterOut
 
-        static member createTable (collation: string) (command: INextTableCreateOut) =
+        static member createTable (collation: string) (command: ITableCreateOut) =
             $"{command} DEFAULT COLLATE = {collation}"
             |> TableCreateOut
 
@@ -130,16 +144,16 @@ module Function =
             |> DataBaseAlterOut
 
     type Cols =
-        static member createTable (TableCol tablecol) (command: INextCols) =
+        static member createTable (TableCol tablecol) (command: IColsTableCreateOut) =
             $"{command.value} {tablecol}" |> TableCreateOut
 
     type Engine =
-        static member createTable (engineName: string) (command: INextTableCreateOut) =
+        static member createTable (engineName: string) (command: ITableCreateOut) =
             $"{command.value} ENGINE = {engineName}"
             |> TableCreateOut
 
     type Comment =
-        static member createTable (comment: string) (command: INextTableCreateOut) =
+        static member createTable (comment: string) (command: ITableCreateOut) =
             $"{command.value} COMMENT = '{comment}'"
             |> TableCreateOut
 
@@ -153,5 +167,8 @@ module Function =
         static member alterDatabase(DataBaseAlterOut command, conn: string) =
             Common.runExecuteNonQuery (command, conn)
 
-        static member createTable(command: INextTableCreateOut, conn: string) =
+        static member createTable(command: ITableCreateOut, conn: string) =
             Common.runExecuteNonQuery (command.value, conn)
+
+        static member dropTable(TableDropOut command, conn: string) =
+            Common.runExecuteNonQuery (command, conn)
