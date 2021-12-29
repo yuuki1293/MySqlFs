@@ -6,7 +6,6 @@ open MySqlFs.Function
 
 [<AutoOpen>]
 module MySqlBuilder =
-
     type MySqlBuilder() =
 
         member _.Yield _ = ()
@@ -22,7 +21,7 @@ module MySqlBuilder =
         member _.Create(v: MySqlConnection, database: DataBase) = Original.create1 database v
 
         [<CustomOperation("create")>]
-        member _.Create(v: MySqlConnection, database: DataBase, ifNotExists: bool) =
+        member _.Create(v: MySqlConnection, database: DataBase, ifNotExists: IfNotExists) =
             Original.create2 database ifNotExists v
 
         [<CustomOperation("charset")>]
@@ -44,7 +43,7 @@ module MySqlBuilder =
             Original.drop1 database v
         
         [<CustomOperation("drop")>]
-        member _.Drop(v: MySqlConnection, database: DataBase, ifExists:bool)=
+        member _.Drop(v: MySqlConnection, database: DataBase, ifExists:IfExists)=
             Original.drop2 database ifExists v
         
         //ALTER DATABASE

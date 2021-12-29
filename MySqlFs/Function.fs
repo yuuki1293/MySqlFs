@@ -1,10 +1,11 @@
 ﻿namespace MySqlFs
-
 open MySql.Data.MySqlClient
 
 [<AutoOpen>]
 module PublicTypes =
     type DataBase = DataBase of string
+    type IfNotExists = IfNotExists
+    type IfExists = IfExists
 
 module Function =
     type DataBaseCreateOut = DataBaseCreateOut of string
@@ -30,30 +31,21 @@ module Function =
             |> DataBaseCreateOut,
             conn
         
-        static member create2 (DataBase database) (ifNotExists: bool) (conn: MySqlConnection) =
-            let ifNotExistsV =
-                if ifNotExists then
-                    "IF NOT EXISTS"
-                else
-                    ""
-
-            $"CREATE DATABASE {ifNotExistsV} {database}"
+        static member create2 (DataBase database) (_: IfNotExists) (conn: MySqlConnection) =
+            $"CREATE DATABASE IF NOT EXISTS {database}"
             |> DataBaseCreateOut,
             conn
         
         static member drop1 (DataBase database) (conn: MySqlConnection) =
             $"DROP DATABASE {database} " |> DataBaseDropOut, conn
 
-        static member drop2 (DataBase database) (ifExists: bool) (conn: MySqlConnection) =
-            let ifExistsV = if ifExists then "IF EXISTS" else ""
-
-            $"DROP DATABASE {ifExistsV} {database}"
+        static member drop2 (DataBase database) (_: IfExists) (conn: MySqlConnection) =
+            $"DROP DATABASE IF EXISTS {database}"
             |> DataBaseDropOut,
             conn
         
         static member alter (DataBase database) (conn: MySqlConnection) = $"ALTER DATABASE {database}"|>DataBaseAlterOut, conn
 
-        
     type CharSet=
         static member createDatabase (character: string) (DataBaseCreateOut command, conn: MySqlConnection) =
             $"{command} DEFAULT CHARACTER SET = {character}"
