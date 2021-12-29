@@ -144,8 +144,8 @@ module Function =
             |> DataBaseAlterOut
 
     type Cols =
-        static member createTable (TableCol tablecol) (command: IColsTableCreateOut) =
-            $"{command.value} {tablecol}" |> TableCreateOut
+        static member createTable (TableCol tableCol) (command: IColsTableCreateOut) =
+            $"{command.value} {tableCol}" |> TableCreateOut
 
     type Engine =
         static member createTable (engineName: string) (command: ITableCreateOut) =
