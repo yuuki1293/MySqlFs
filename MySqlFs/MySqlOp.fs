@@ -6,12 +6,9 @@ open MySqlFs.Function
 
 [<AutoOpen>]
 module MySqlBuilder =
-    type MySqlBuilder() =
+    type MySqlBuilder(conn: string) =
 
-        member _.Yield _ = ()
-
-        [<CustomOperation("open'")>]
-        member _.Open(_, conn) = Common.open' conn
+        member _.Yield _ = Common.open' conn
 
         //CREATE DATABASE
         member _.Run(v: DataBaseCreateOut * MySqlConnection) = Run.createDatabase v
@@ -56,4 +53,4 @@ module MySqlBuilder =
         [<CustomOperation("encryption")>]
         member _.Encryption(v: DataBaseAlterOut * MySqlConnection, enable: bool) = Encryption.alterDatabase enable v
 
-    let mysql = MySqlBuilder()
+    let mysql connection= MySqlBuilder connection
