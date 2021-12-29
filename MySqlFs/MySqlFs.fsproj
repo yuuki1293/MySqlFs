@@ -7,6 +7,7 @@
 
     <ItemGroup>
       <Compile Include="Function.fs" />
+      <Compile Include="TableOp.fs" />
       <Compile Include="MySqlOp.fs" />
     </ItemGroup>
 
