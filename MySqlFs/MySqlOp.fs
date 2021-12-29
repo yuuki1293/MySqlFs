@@ -1,5 +1,6 @@
 ﻿namespace MySqlFs
 
+open System
 open MySql.Data.MySqlClient
 open System.Text
 open MySqlFs
@@ -12,23 +13,12 @@ module MySqlBuilder =
 
         member _.Yield _ = ()
 
-        static member RunExecuteNonQuery(commandS, conn: MySqlConnection) =
-            try
-                conn.Open()
-                use mutable command = conn.CreateCommand()
-                command.CommandText <- commandS
-                command.Connection <- conn
-                command.ExecuteNonQuery() |> Ok
-            with
-            | x -> Error x
-
         [<CustomOperation("open'")>]
         member _.Open(_, conn) = MySql.open' (conn)
         
         //CREATE DATABASE
         member _.Run(v: DataBaseCreateOut * MySqlConnection) =
-            let DataBaseCreateOut command, conn = v
-            MySqlBuilder.RunExecuteNonQuery(command, conn)
+            MySql.runCreateDatabase(v)
 
         [<CustomOperation("create")>]
         member _.Create(v: MySqlConnection, database: DataBase) = MySql.create1 database v
@@ -39,22 +29,21 @@ module MySqlBuilder =
 
         [<CustomOperation("charset")>]
         member _.CharSet(v: DataBaseCreateOut * MySqlConnection, character: string) =
-            MySql.defaultCharacterSetS character v
+            MySql.defaultCharacterSetCreateDatabaseS character v
 
         [<CustomOperation("charset")>]
         member _.CharSet(v: DataBaseCreateOut * MySqlConnection, character: Encoding) =
-            MySql.defaultCharacterSetE character v
+            MySql.defaultCharacterSetCreateDatabaseE character v
 
         [<CustomOperation("collate")>]
-        member _.Collate(v: DataBaseCreateOut * MySqlConnection, collation: string) = MySql.defaultCollate collation v
+        member _.Collate(v: DataBaseCreateOut * MySqlConnection, collation: string) = MySql.defaultCollateCreateDatabase collation v
 
         [<CustomOperation("encryption")>]
-        member _.Encryption(v: DataBaseCreateOut * MySqlConnection, enable: bool) = MySql.defaultEncryption enable v
+        member _.Encryption(v: DataBaseCreateOut * MySqlConnection, enable: bool) = MySql.defaultEncryptionCreateDatabase enable v
         
         //DROP DATABASE
         member _.Run(v: DataBaseDropOut * MySqlConnection) =
-            let DataBaseDropOut command, conn = v
-            MySqlBuilder.RunExecuteNonQuery(command, conn)
+            MySql.runDropDatabase(v)
          
         [<CustomOperation("drop")>]
         member _.Drop(v: MySqlConnection, database: DataBase)=
@@ -64,4 +53,24 @@ module MySqlBuilder =
         member _.Drop(v: MySqlConnection, database: DataBase, ifExists:bool)=
             MySql.drop2 database ifExists v
         
+        //ALTER DATABASE
+        member _.Run(v: DataBaseAlterOut * MySqlConnection) =
+            MySql.runAlterDatabase(v)
+
+        [<CustomOperation("alter")>]
+        member _.Alter(v: MySqlConnection, database: DataBase) = MySql.alter database v
+
+        [<CustomOperation("charset")>]
+        member _.CharSet(v: DataBaseAlterOut * MySqlConnection, character: string) =
+            MySql.defaultCharacterSetAlterDatabaseS character v
+
+        [<CustomOperation("charset")>]
+        member _.CharSet(v: DataBaseAlterOut * MySqlConnection, character: Encoding) =
+            MySql.defaultCharacterSetAlterDatabaseE character v
+
+        [<CustomOperation("collate")>]
+        member _.Collate(v: DataBaseAlterOut * MySqlConnection, collation: string) = MySql.defaultCollateSetAlterDatabase collation v
+
+        [<CustomOperation("encryption")>]
+        member _.Encryption(v: DataBaseAlterOut * MySqlConnection, enable: bool) = MySql.defaultEncryptionSetAlterDatabase enable v
     let mysql = MySqlBuilder()
