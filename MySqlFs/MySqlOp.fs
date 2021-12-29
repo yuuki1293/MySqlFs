@@ -1,8 +1,6 @@
 ﻿namespace MySqlFs
 
-open System
 open MySql.Data.MySqlClient
-open System.Text
 open MySqlFs
 open MySqlFs.Function
 
@@ -14,63 +12,55 @@ module MySqlBuilder =
         member _.Yield _ = ()
 
         [<CustomOperation("open'")>]
-        member _.Open(_, conn) = MySql.open' (conn)
+        member _.Open(_, conn) = Common.open' conn
         
         //CREATE DATABASE
         member _.Run(v: DataBaseCreateOut * MySqlConnection) =
-            MySql.runCreateDatabase(v)
+            Run.createDatabase v
 
         [<CustomOperation("create")>]
-        member _.Create(v: MySqlConnection, database: DataBase) = MySql.create1 database v
+        member _.Create(v: MySqlConnection, database: DataBase) = Original.create1 database v
 
         [<CustomOperation("create")>]
         member _.Create(v: MySqlConnection, database: DataBase, ifNotExists: bool) =
-            MySql.create2 database ifNotExists v
+            Original.create2 database ifNotExists v
 
         [<CustomOperation("charset")>]
         member _.CharSet(v: DataBaseCreateOut * MySqlConnection, character: string) =
-            MySql.defaultCharacterSetCreateDatabaseS character v
-
-        [<CustomOperation("charset")>]
-        member _.CharSet(v: DataBaseCreateOut * MySqlConnection, character: Encoding) =
-            MySql.defaultCharacterSetCreateDatabaseE character v
+            CharSet.createDatabase character v
 
         [<CustomOperation("collate")>]
-        member _.Collate(v: DataBaseCreateOut * MySqlConnection, collation: string) = MySql.defaultCollateCreateDatabase collation v
+        member _.Collate(v: DataBaseCreateOut * MySqlConnection, collation: string) = Collate.createDatabase collation v
 
         [<CustomOperation("encryption")>]
-        member _.Encryption(v: DataBaseCreateOut * MySqlConnection, enable: bool) = MySql.defaultEncryptionCreateDatabase enable v
+        member _.Encryption(v: DataBaseCreateOut * MySqlConnection, enable: bool) = Encryption.createDatabase enable v
         
         //DROP DATABASE
         member _.Run(v: DataBaseDropOut * MySqlConnection) =
-            MySql.runDropDatabase(v)
+            Run.dropDatabase(v)
          
         [<CustomOperation("drop")>]
         member _.Drop(v: MySqlConnection, database: DataBase)=
-            MySql.drop1 database v
+            Original.drop1 database v
         
         [<CustomOperation("drop")>]
         member _.Drop(v: MySqlConnection, database: DataBase, ifExists:bool)=
-            MySql.drop2 database ifExists v
+            Original.drop2 database ifExists v
         
         //ALTER DATABASE
         member _.Run(v: DataBaseAlterOut * MySqlConnection) =
-            MySql.runAlterDatabase(v)
+            Run.runAlterDatabase(v)
 
         [<CustomOperation("alter")>]
-        member _.Alter(v: MySqlConnection, database: DataBase) = MySql.alter database v
+        member _.Alter(v: MySqlConnection, database: DataBase) = Original.alter database v
 
         [<CustomOperation("charset")>]
         member _.CharSet(v: DataBaseAlterOut * MySqlConnection, character: string) =
-            MySql.defaultCharacterSetAlterDatabaseS character v
-
-        [<CustomOperation("charset")>]
-        member _.CharSet(v: DataBaseAlterOut * MySqlConnection, character: Encoding) =
-            MySql.defaultCharacterSetAlterDatabaseE character v
+            CharSet.alterDatabase character v
 
         [<CustomOperation("collate")>]
-        member _.Collate(v: DataBaseAlterOut * MySqlConnection, collation: string) = MySql.defaultCollateSetAlterDatabase collation v
+        member _.Collate(v: DataBaseAlterOut * MySqlConnection, collation: string) = Collate.alterDatabase collation v
 
         [<CustomOperation("encryption")>]
-        member _.Encryption(v: DataBaseAlterOut * MySqlConnection, enable: bool) = MySql.defaultEncryptionSetAlterDatabase enable v
+        member _.Encryption(v: DataBaseAlterOut * MySqlConnection, enable: bool) = Encryption.alterDatabase enable v
     let mysql = MySqlBuilder()
