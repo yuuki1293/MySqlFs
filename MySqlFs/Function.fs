@@ -132,7 +132,7 @@ module Function =
             |> NextOptTableCreate
 
     let inline commentBuild (command: ^i) (comment: string) =
-        $"{(^i: (member value : string) command)} COMMENT = {comment}"
+        $"{(^i: (member value : string) command)} COMMENT = '{comment}'"
 
     type Comment =
         static member createTable (comment: string) (command: IOptTableCreate) =

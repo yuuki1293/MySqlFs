@@ -6,23 +6,43 @@ let mydb =
 let mydbt =
     mysql "Server=localhost;Uid=root;Pwd=root;Database=hoge"
 
-mydb { drop (DataBase "hoge") } |> printfn "%A"
-mydb { create (DataBase "hoge") } |> printfn "%A"
+let ifExn (result:Result<int,exn>)=
+    match result with
+    | Ok x -> printfn $"OK %d{x}"
+    | Error x ->
+        raise x
+
+mydb { create (DataBase "hoge") IfNotExists }
+|> ifExn
 
 mydb {
     alter (DataBase "hoge")
-    readonly true
+    readonly false
 }
-|> printfn "%A"
+|> ifExn
+
+mydbt{
+    drop (Table "fuga") IfExists
+}
+|> ifExn
+
+mydbt{
+    drop (Table "piyo") IfExists
+}
+|> ifExn
+
+mydbt{
+    create (Table "fuga")
+    cols (table{
+        col "id" "INTEGER" [PrimaryKey;AutoIncrement]
+        col "name" "VARCHAR(20)" [NotNull]
+    })
+    comment "test table 1"
+}
+|>ifExn
 
 mydbt {
-    create (Table "fuga")
-
-    cols (
-        table {
-            col "id" "INTEGER" [ PrimaryKey; AutoIncrement ]
-            col "name" "VARCHAR(20)" [ NotNull ]
-        }
-    )
+    create (Table "piyo")
+    like (Table "fuga")
 }
-|> printfn "%A"
+|> ifExn
