@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MySqlFs", "MySqlFs\MySqlFs.fsproj", "{DBBAC748-D94C-4AA8-9FD8-115635D83360}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Sample", "Sample\Sample.fsproj", "{1BCD3603-EF11-43BE-BB6B-E2BE009C4552}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{DBBAC748-D94C-4AA8-9FD8-115635D83360}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBBAC748-D94C-4AA8-9FD8-115635D83360}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBBAC748-D94C-4AA8-9FD8-115635D83360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BCD3603-EF11-43BE-BB6B-E2BE009C4552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BCD3603-EF11-43BE-BB6B-E2BE009C4552}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BCD3603-EF11-43BE-BB6B-E2BE009C4552}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BCD3603-EF11-43BE-BB6B-E2BE009C4552}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

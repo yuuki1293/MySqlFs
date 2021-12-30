@@ -6,6 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Include="PrivateInterface.fs" />
+      <Compile Include="PrivateType.fs" />
+      <Compile Include="PublicType.fs" />
       <Compile Include="Function.fs" />
       <Compile Include="TableOp.fs" />
       <Compile Include="MySqlOp.fs" />

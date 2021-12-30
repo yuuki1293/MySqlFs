@@ -1,25 +1,9 @@
 ﻿namespace MySqlFs
 
-open MySqlFs.Function
+open MySqlFs.PrivateType
 
 [<AutoOpen>]
 module TableBuilder =
-    type ColOption =
-        | NotNull
-        | Default of string
-        | AutoIncrement
-        | Unique
-        | PrimaryKey
-        | Comment of string
-         member this.Get =
-            match this with
-            | NotNull -> "NOT NULL"
-            | Default x -> $"DEFAULT {x}"
-            | AutoIncrement -> "AUTO_INCREMENT"
-            | Unique -> "UNIQUE"
-            | PrimaryKey -> "PRIMARY KEY"
-            | Comment x -> $"COMMENT '{x}'"
-
     type TableBuilder() =
         member _.Yield _ = ""
         member _.Run (x: string) =
