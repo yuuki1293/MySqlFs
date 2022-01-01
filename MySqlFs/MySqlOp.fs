@@ -1,6 +1,7 @@
 ﻿namespace MySqlFs
 
 open Function
+open MySqlFs
 open MySqlFs.PrivateInterface
 open PrivateType
 
@@ -8,7 +9,6 @@ open PrivateType
 module MySqlBuilder =
     type MySqlBuilder(conn: string) =
         member _.Yield _ = ()
-
         member _.Run(v: IEndExecuteNonQuery) = Run.executeNonQuery v conn
 
         //CREATE DATABASE
@@ -106,5 +106,12 @@ module MySqlBuilder =
         member _.Drop(_: unit, table: Table, temporary: Temporary, ifExists: IfExists) =
             Original.dropTable4 table ifExists temporary
 
-    //ALTER TABLE
+        //ALTER TABLE
+        [<CustomOperation("alter")>]
+        member _.Alter(_:unit, table:Table)=
+            Original.alterTable table
+            
+        [<CustomOperation("opt")>]
+        member _.Opt(command:IAlterSpecification, tableOptions:TableOption list) =
+            Opt.alterTable tableOptions command
     let mysql connection = MySqlBuilder connection
